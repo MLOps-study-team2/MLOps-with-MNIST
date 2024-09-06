@@ -1,0 +1,99 @@
+# macOS 관련
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# macOS 파일에서 저장되는 일부 데이터베이스 파일들
+.DocumentRevisions-V100/*
+.fseventsd/*
+.TemporaryItems/*
+.Trashes/*
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Python 관련
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# 가상 환경
+venv/
+env/
+ENV/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+# pyenv
+.python-version
+# poetry
+poetry.lock
+# tox
+.tox/
+.nox/
+# Pyre type checker
+.pyre/
+# Pylint
+pylint-results.xml
+
+# MLflow 관련
+mlruns/
+mlflow-artifacts/
+
+# VSCode 관련
+.vscode/
+
+# Jupyter Notebook Checkpoints
+.ipynb_checkpoints/
+
+# 파이썬 패키지
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+wheels/
+share/python-wheels/
+*.manifest
+*.spec
+
+# PyInstaller
+*.log
+*.dll
+*.pyz
+*.pyc
+*.tmp
+
+# Coverage 결과
+.coverage
+*.cover
+.hypothesis/
+htmlcov/
+
+# MyPy 체크 결과
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# SQLite 데이터베이스 파일
+*.db
+*.sqlite3
+
+# Unit test 및 pytest 관련
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+*.log
