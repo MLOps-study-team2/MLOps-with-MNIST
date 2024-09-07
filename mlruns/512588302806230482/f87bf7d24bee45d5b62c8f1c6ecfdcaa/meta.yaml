@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/%EC%A7%84%EB%A1%9C%EC%9E%90%EB%A3%8C/Naver%20Boostcamp/MLOps/MLOps-with-MNIST/mlruns/512588302806230482/f87bf7d24bee45d5b62c8f1c6ecfdcaa/artifacts
+end_time: 1725627464699
+entry_point_name: ''
+experiment_id: '512588302806230482'
+lifecycle_stage: active
+run_id: f87bf7d24bee45d5b62c8f1c6ecfdcaa
+run_name: upset-wasp-517
+run_uuid: f87bf7d24bee45d5b62c8f1c6ecfdcaa
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1725627210562
+status: 3
+tags: []
+user_id: user
