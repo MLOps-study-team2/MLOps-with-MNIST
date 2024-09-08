@@ -1,0 +1,15 @@
+artifact_uri: file:///home/geonwook/MLOps/project/MLOps-with-MNIST/mlruns/565407947048062922/7e9a781317b34fbabca0b14fb8be408d/artifacts
+end_time: 1725808258062
+entry_point_name: ''
+experiment_id: '565407947048062922'
+lifecycle_stage: active
+run_id: 7e9a781317b34fbabca0b14fb8be408d
+run_name: valuable-dog-214
+run_uuid: 7e9a781317b34fbabca0b14fb8be408d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1725808199753
+status: 3
+tags: []
+user_id: geonwook

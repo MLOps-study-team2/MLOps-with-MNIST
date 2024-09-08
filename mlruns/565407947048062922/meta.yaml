@@ -1,0 +1,6 @@
+artifact_location: file:///home/geonwook/MLOps/project/MLOps-with-MNIST/mlruns/565407947048062922
+creation_time: 1725808158916
+experiment_id: '565407947048062922'
+last_update_time: 1725808158916
+lifecycle_stage: active
+name: model-train

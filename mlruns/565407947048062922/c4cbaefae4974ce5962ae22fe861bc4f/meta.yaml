@@ -1,0 +1,15 @@
+artifact_uri: file:///home/geonwook/MLOps/project/MLOps-with-MNIST/mlruns/565407947048062922/c4cbaefae4974ce5962ae22fe861bc4f/artifacts
+end_time: 1725808775325
+entry_point_name: ''
+experiment_id: '565407947048062922'
+lifecycle_stage: active
+run_id: c4cbaefae4974ce5962ae22fe861bc4f
+run_name: popular-smelt-551
+run_uuid: c4cbaefae4974ce5962ae22fe861bc4f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1725808720363
+status: 3
+tags: []
+user_id: geonwook

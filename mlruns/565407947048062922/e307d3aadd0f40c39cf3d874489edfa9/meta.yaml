@@ -1,0 +1,15 @@
+artifact_uri: file:///home/geonwook/MLOps/project/MLOps-with-MNIST/mlruns/565407947048062922/e307d3aadd0f40c39cf3d874489edfa9/artifacts
+end_time: 1725808949366
+entry_point_name: ''
+experiment_id: '565407947048062922'
+lifecycle_stage: active
+run_id: e307d3aadd0f40c39cf3d874489edfa9
+run_name: peaceful-goose-799
+run_uuid: e307d3aadd0f40c39cf3d874489edfa9
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1725808892751
+status: 3
+tags: []
+user_id: geonwook
