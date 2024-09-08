@@ -7,6 +7,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import DataLoader, TensorDataset
 
+import mlflow
+
+
 class CNNModel(nn.Module):
     def __init__(self):
         super(CNNModel, self).__init__()
@@ -37,6 +40,13 @@ def train(model, device, train_loader, optimizer, epoch):
             print(f'Train Epoch: {epoch} [{batch_idx * len(data)}/{len(train_loader.dataset)}'
                   f' ({100. * batch_idx / len(train_loader):.0f}%)]\tLoss: {loss.item():.6f}')
 
+    # Save
+    torch.save(model, './saved_model.pt')
+
+    # log
+    mlflow.log_metric('train loss', loss.item())
+
+
 def test(model, device, test_loader):
     model.eval()
     test_loss = 0
@@ -52,6 +62,9 @@ def test(model, device, test_loader):
     test_loss /= len(test_loader.dataset)
     print(f'\nTest set: Average loss: {test_loss:.4f}, Accuracy: {correct}/{len(test_loader.dataset)}'
           f' ({100. * correct / len(test_loader.dataset):.0f}%)\n')
+          
+    # log
+    mlflow.log_metric('test loss', test_loss)
 
 def main():
     # MNIST 데이터셋 로드
@@ -90,7 +103,8 @@ def main():
         device = torch.device("mps")
     else:
         device = torch.device("cpu")
-    
+    print("device: ", device)
+
     model = CNNModel().to(device)
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
@@ -100,6 +114,17 @@ def main():
         test(model, device, test_loader)
 
     test(model, device, test_loader)
+
+    # log
+    mlflow.log_param('epoch', 10)
+    mlflow.log_param('lr', 0.001)
+    mlflow.log_param('train batch size', 64)
+    mlflow.log_param('test batch size', 1000)
     
 if __name__ == "__main__":
+    print("Start Training...")
+    
+    # Experimetn 설정
+    mlflow.set_experiment('new_exp')
+
     main()
