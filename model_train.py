@@ -61,8 +61,10 @@ def test(model, device, test_loader):
     return test_loss, accuracy
 
 def main():
+    # experiment를 active하고 experiment instance를 반환.
     mlflow.set_experiment("MNIST_CNN_Classification")
     
+    # 새로운 run을 시작. 기존 run이 있다면 end_run으로 끝내고 start_run을 해야 함.
     with mlflow.start_run():
         # MNIST dataset loading
         mnist = fetch_openml('mnist_784', version=1)
@@ -121,6 +123,7 @@ def main():
 
         # Log the final model
         mlflow.pytorch.log_model(model, "model")
+        # active_run : 현재 active인 run을 object를 반환
         print("Model saved in run %s" % mlflow.active_run().info.run_uuid)
 
 if __name__ == "__main__":
