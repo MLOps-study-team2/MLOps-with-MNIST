@@ -1,0 +1,6 @@
+poetry.lock
+pyproject.toml
+API/
+__pycache__/
+mlruns/
+mode_train/mlruns/
