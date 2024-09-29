@@ -74,7 +74,6 @@ def test(model, device, loss_fn, test_loader):
 # mlflow.set_tracking_uri(uri="http://127.0.0.1:5000")/
 mlflow.set_experiment("model-train")
 def main():    
-    mlflow.pytorch.autolog()
     # MNIST 데이터셋 로드
     mnist = fetch_openml('mnist_784', version=1)
     X, y = mnist["data"], mnist["target"].astype(int)
@@ -128,12 +127,12 @@ def main():
             'optimizer': 'Adam'
         }
         # Log Training Parameters
-        # mlflow.log_params(params)
+        mlflow.log_params(params)
         
         # Log model summary
-        # with open('model_summary.txt', 'w') as f:
-        #     f.write(str(summary(model)))
-        # mlflow.log_artifact('model_summary.txt')
+        with open('model_summary.txt', 'w') as f:
+            f.write(str(summary(model)))
+        mlflow.log_artifact('model_summary.txt')
         
         # 모델 학습 및 평가
         for epoch in range(1, epochs+1):  # 10 에포크 동안 학습
