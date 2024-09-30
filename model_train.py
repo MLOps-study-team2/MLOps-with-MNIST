@@ -41,10 +41,11 @@ def train(model, device, train_loader, optimizer, epoch):
                   f' ({100. * batch_idx / len(train_loader):.0f}%)]\tLoss: {loss.item():.6f}')
 
     # Save
-    torch.save(model, './saved_model.pt')
+    # torch.save(model, './saved_model.pt')
+    torch.save(model.state_dict(), './saved_model.pt')
 
     # log
-    mlflow.log_metric('train loss', loss.item())
+    # mlflow.log_metric('train loss', loss.item())
 
 
 def test(model, device, test_loader):
@@ -64,7 +65,7 @@ def test(model, device, test_loader):
           f' ({100. * correct / len(test_loader.dataset):.0f}%)\n')
           
     # log
-    mlflow.log_metric('test loss', test_loss)
+    # mlflow.log_metric('test loss', test_loss)
 
 def main():
     # MNIST 데이터셋 로드
@@ -116,15 +117,20 @@ def main():
     test(model, device, test_loader)
 
     # log
-    mlflow.log_param('epoch', 10)
-    mlflow.log_param('lr', 0.001)
-    mlflow.log_param('train batch size', 64)
-    mlflow.log_param('test batch size', 1000)
+    # mlflow.log_param('epoch', 10)
+    # mlflow.log_param('lr', 0.001)
+    # mlflow.log_param('train batch size', 64)
+    # mlflow.log_param('test batch size', 1000)
     
 if __name__ == "__main__":
     print("Start Training...")
     
+    # log
+    mlflow.autolog()
+
     # Experimetn 설정
     mlflow.set_experiment('new_exp')
 
+    # with mlflow.start_run():
+    
     main()
