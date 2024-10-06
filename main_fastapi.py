@@ -45,18 +45,16 @@ async def root():
     return {"message": "Hello World"}
 
 
-@app.get("/predict")
+@app.post("/predict")
 def predict(
-    input_data: Optional[Any] = None,
+    idx: int,
 ):    
     global model
     global device
-    
-    if input_data == None:    # using scikit-learn data 
+    try:
         mnist = fetch_openml('mnist_784', version=1)
         X, y = mnist["data"], mnist["target"].astype(int)
 
-        idx = random.randint(0, len(X))
         input_data = X.iloc[idx]
         input_data = torch.tensor(input_data, dtype=torch.float32).view(-1, 1, 28, 28)
         input_data = input_data.to(device)
@@ -66,15 +64,18 @@ def predict(
         pred_label = pred.argmax(dim=1).item()
 
         result = {
+            "idx": idx,
             "input_shape": input_data.shape,
             "gt_label": gt_label,
             "pred_label": pred_label
 
         }
         return result
+    except IndexError:
+        return {"error": "Invalid index. Please provide a valid index within the MNIST dataset range."}
+    except Exception as e:
+        return {"error": f"An unexpected error occurred: {str(e)}"} 
 
-    else:
-        pass
 
     
 
