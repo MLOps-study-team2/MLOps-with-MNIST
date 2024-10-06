@@ -48,6 +48,9 @@ def train(model, device, train_loader, optimizer, epoch):
     # Save for bentoml
     bentoml.pytorch.save_model('saved_model_bentoml', model, labels={'owner':'aitech', 'stage':'dev'})
 
+    # Save mlflow
+    mlflow.pytorch.log_model(model, 'model')
+
     # log
     # mlflow.log_metric('train loss', loss.item())
 
@@ -133,7 +136,7 @@ if __name__ == "__main__":
     mlflow.autolog()
 
     # Experimetn 설정
-    mlflow.set_experiment('new_exp')
+    mlflow.set_experiment('mnist')
 
     # with mlflow.start_run():
     
