@@ -8,6 +8,7 @@ from sklearn.preprocessing import StandardScaler
 from torch.utils.data import DataLoader, TensorDataset
 
 import mlflow
+import bentoml
 
 
 class CNNModel(nn.Module):
@@ -43,6 +44,9 @@ def train(model, device, train_loader, optimizer, epoch):
     # Save
     # torch.save(model, './saved_model.pt')
     torch.save(model.state_dict(), './saved_model.pt')
+
+    # Save for bentoml
+    bentoml.pytorch.save_model('saved_model_bentoml', model, labels={'owner':'aitech', 'stage':'dev'})
 
     # log
     # mlflow.log_metric('train loss', loss.item())
