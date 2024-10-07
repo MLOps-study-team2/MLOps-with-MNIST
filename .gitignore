@@ -1,6 +1,2 @@
-API/
-__pycache__/
-mlruns/
-mode_train/mlruns/
-/data/MNIST
-/model_train/data/
+mlruns
+.DS_Store

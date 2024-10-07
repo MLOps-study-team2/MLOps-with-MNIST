@@ -2,14 +2,12 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
-from torchinfo import summary
 from sklearn.datasets import fetch_openml
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import DataLoader, TensorDataset
-
 import mlflow
-
+import pandas as pd
 
 class CNNModel(nn.Module):
     def __init__(self):
@@ -28,29 +26,20 @@ class CNNModel(nn.Module):
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
 
-def train(model, device, loss_fn, train_loader, optimizer, epoch):
+def train(model, device, train_loader, optimizer, epoch):
     model.train()
-    correct = 0
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
         output = model(data)
-        loss = loss_fn(output, target)
+        loss = nn.CrossEntropyLoss()(output, target)
         loss.backward()
         optimizer.step()
-        
-        pred = output.argmax(dim=1, keepdim=True)
-        correct += pred.eq(target.view_as(pred)).sum().item()
-        train_acc = correct / len(train_loader.dataset)
-        
         if batch_idx % 100 == 0:
-            step = batch_idx // 100 * (epoch+1) 
-            mlflow.log_metric('loss', f'{loss:.4f}', step=step)
-            mlflow.log_metric('accuracy', f'{train_acc:.4f}', step=step)
             print(f'Train Epoch: {epoch} [{batch_idx * len(data)}/{len(train_loader.dataset)}'
                   f' ({100. * batch_idx / len(train_loader):.0f}%)]\tLoss: {loss.item():.6f}')
 
-def test(model, device, loss_fn, test_loader):
+def test(model, device, test_loader):
     model.eval()
     test_loss = 0
     correct = 0
@@ -58,15 +47,11 @@ def test(model, device, loss_fn, test_loader):
         for data, target in test_loader:
             data, target = data.to(device), target.to(device)
             output = model(data)
-            test_loss += loss_fn(output, target).item()  # 배치 손실 더하기
+            test_loss += nn.CrossEntropyLoss()(output, target).item()  # 배치 손실 더하기
             pred = output.argmax(dim=1, keepdim=True)  # 가장 높은 log-probability를 가진 인덱스 찾기
             correct += pred.eq(target.view_as(pred)).sum().item()
 
     test_loss /= len(test_loader.dataset)
-    test_acc = correct / len(test_loader.dataset)
-    mlflow.log_metric('test_loss', f'{test_loss:.4f}')
-    mlflow.log_metric('test_accuracy', f'{test_acc:.4f}')
-    
     print(f'\nTest set: Average loss: {test_loss:.4f}, Accuracy: {correct}/{len(test_loader.dataset)}'
           f' ({100. * correct / len(test_loader.dataset):.0f}%)\n')
 
@@ -75,7 +60,7 @@ def test(model, device, loss_fn, test_loader):
 mlflow.set_experiment("model-train")
 def main():    
     # MNIST 데이터셋 로드
-    mnist = fetch_openml('mnist_784', version=1)
+    mnist:pd.DataFrame = fetch_openml('mnist_784', version=1)
     X, y = mnist["data"], mnist["target"].astype(int)
 
     # 데이터를 학습용과 테스트용으로 나누기
@@ -116,30 +101,13 @@ def main():
     model = CNNModel().to(device)
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-    with mlflow.start_run() as run:
-        params = {
-            'epochs': epochs,
-            'learning_rate': 1e-3,
-            'train: batch_size': 64,
-            'test: batch_size': 1000,
-            'loss_function': loss_fn.__class__.__name__,
-            'metric_function': 'Accuracy',
-            'optimizer': 'Adam'
-        }
-        # Log Training Parameters
-        mlflow.log_params(params)
-        
-        # Log model summary
-        with open('model_summary.txt', 'w') as f:
-            f.write(str(summary(model)))
-        mlflow.log_artifact('model_summary.txt')
-        
-        # 모델 학습 및 평가
-        for epoch in range(1, epochs+1):  # 10 에포크 동안 학습
-            train(model, device, loss_fn, train_loader, optimizer, epoch)
-            test(model, device, loss_fn, test_loader)
+    # 모델 학습 및 평가
+    for epoch in range(1, 11):  # 10 에포크 동안 학습
+        train(model, device, train_loader, optimizer, epoch)
+        test(model, device, test_loader)
 
-        test(model, device, loss_fn, test_loader)
+    test(model, device, test_loader)
     
 if __name__ == "__main__":
+    mlflow.set_experiment("mnist_experiment")
     main()
