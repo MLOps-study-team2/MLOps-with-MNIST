@@ -132,4 +132,5 @@ def main():
         print(f"Run ID: {run.info.run_id}")
     
 if __name__ == "__main__":
+    mlflow.set_experiment("mnist_experiment")
     main()
