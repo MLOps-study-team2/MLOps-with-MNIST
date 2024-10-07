@@ -10,6 +10,8 @@ python = "^3.11"
 torch = "^2.4.0"
 scikit-learn = "^1.5.1"
 pandas = "^2.2.2"
+fastapi = "^0.115.0"
+pillow = "^10.4.0"
 
 
 [build-system]
