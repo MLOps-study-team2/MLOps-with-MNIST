@@ -4,3 +4,4 @@ API/
 __pycache__/
 mlruns/
 mode_train/mlruns/
+/data/MNIST
