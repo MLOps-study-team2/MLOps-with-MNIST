@@ -6,6 +6,8 @@ from sklearn.datasets import fetch_openml
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import DataLoader, TensorDataset
+import mlflow
+import pandas as pd
 
 class CNNModel(nn.Module):
     def __init__(self):
