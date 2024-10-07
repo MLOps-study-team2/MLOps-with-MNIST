@@ -1,0 +1,7 @@
+poetry 가상환경 세팅
+
+맨 처음 가상환경 만들 때
+poetry init
+
+가상환경 실행할 때
+poetry shell

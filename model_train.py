@@ -1,3 +1,7 @@
+# poetry shell
+# python model_train.py
+# 학습 후
+# 
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -8,23 +12,9 @@ from sklearn.preprocessing import StandardScaler
 from torch.utils.data import DataLoader, TensorDataset
 import mlflow
 import mlflow.pytorch
-
-class CNNModel(nn.Module):
-    def __init__(self):
-        super(CNNModel, self).__init__()
-        self.conv1 = nn.Conv2d(1, 32, kernel_size=3, padding=1)
-        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
-        self.pool = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
-        self.fc1 = nn.Linear(64 * 7 * 7, 128)
-        self.fc2 = nn.Linear(128, 10)
-
-    def forward(self, x):
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        x = x.view(-1, 64 * 7 * 7)  # Flatten the tensor
-        x = F.relu(self.fc1(x))
-        x = self.fc2(x)
-        return F.log_softmax(x, dim=1)
+import mlflow.sklearn
+import numpy as np
+from model import CNNModel
 
 def train(model, device, train_loader, optimizer, epoch):
     model.train()
@@ -61,6 +51,7 @@ def test(model, device, test_loader):
     return test_loss, accuracy
 
 def main():
+    mlflow.set_tracking_uri("http://localhost:5000")
     # experiment를 active하고 experiment instance를 반환.
     mlflow.set_experiment("MNIST_CNN_Classification")
     
@@ -122,7 +113,12 @@ def main():
             mlflow.log_metric("accuracy", accuracy, step=epoch)
 
         # Log the final model
-        mlflow.pytorch.log_model(model, "model")
+        # mlflow registry에 모델 저장
+        # 원래 mlflow.sklearn이었는데 생각해보니 내 모델은 sklearn이 아님.
+        # 그래서 나중에 다시 해봤더니 안되면 sklearn으로 다시 바꿔서 해보기
+        mlflow.pytorch.log_model(model, "model", registered_model_name='MLOps-MNIST')
+        #np.save("./ckpt/stat.npy", np.array([scaler.mean_, scaler.scale_]))
+        #torch.save(model.state_dict(), './ckpt/model.pt')
         # active_run : 현재 active인 run을 object를 반환
         print("Model saved in run %s" % mlflow.active_run().info.run_uuid)
 
