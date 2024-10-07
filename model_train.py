@@ -2,17 +2,11 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
+from torchinfo import summary
 from sklearn.datasets import fetch_openml
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import DataLoader, TensorDataset
-import pandas as pd
-import numpy as np
-import mlflow
-import mlflow.pytorch
-from mlflow.models.signature import infer_signature
-from tqdm import tqdm
-
 
 class CNNModel(nn.Module):
     def __init__(self):
@@ -31,42 +25,39 @@ class CNNModel(nn.Module):
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
 
-def train(model:nn.Module, device, train_loader:DataLoader, optimizer:optim.Adam, epoch):
+def train(model, device, train_loader, optimizer, epoch):
     model.train()
-    total_loss = 0
-    
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
-        output:torch.Tensor = model(data)
-        loss:torch.Tensor = nn.CrossEntropyLoss()(output, target)
+        output = model(data)
+        loss = nn.CrossEntropyLoss()(output, target)
         loss.backward()
         optimizer.step()
-        
-        total_loss += loss.item()
-                    
-    return total_loss / len(train_loader)
+        if batch_idx % 100 == 0:
+            print(f'Train Epoch: {epoch} [{batch_idx * len(data)}/{len(train_loader.dataset)}'
+                  f' ({100. * batch_idx / len(train_loader):.0f}%)]\tLoss: {loss.item():.6f}')
 
-def test(model:nn.Module, device, test_loader:DataLoader):
+def test(model, device, test_loader):
     model.eval()
     test_loss = 0
     correct = 0
     with torch.no_grad():
         for data, target in test_loader:
             data, target = data.to(device), target.to(device)
-            output:torch.Tensor = model(data)
+            output = model(data)
             test_loss += nn.CrossEntropyLoss()(output, target).item()  # 배치 손실 더하기
             pred = output.argmax(dim=1, keepdim=True)  # 가장 높은 log-probability를 가진 인덱스 찾기
             correct += pred.eq(target.view_as(pred)).sum().item()
 
     test_loss /= len(test_loader.dataset)
-    accuracy = 100. * correct / len(test_loader.dataset)
-    
-    print(f"loss: {test_loss} accuracy: {accuracy}")
-    
-    return test_loss, accuracy
+    print(f'\nTest set: Average loss: {test_loss:.4f}, Accuracy: {correct}/{len(test_loader.dataset)}'
+          f' ({100. * correct / len(test_loader.dataset):.0f}%)\n')
 
-def main():
+
+# mlflow.set_tracking_uri(uri="http://127.0.0.1:5000")/
+mlflow.set_experiment("model-train")
+def main():    
     # MNIST 데이터셋 로드
     mnist:pd.DataFrame = fetch_openml('mnist_784', version=1)
     X, y = mnist["data"], mnist["target"].astype(int)
@@ -104,32 +95,17 @@ def main():
     else:
         device = torch.device("cpu")
     
+    epochs = 10
+    loss_fn = nn.CrossEntropyLoss()
     model = CNNModel().to(device)
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-    # MLflow 시작
-    with mlflow.start_run() as run:
-        # 파라미터 로깅
-        mlflow.log_param("learning rate", .001)
-        mlflow.log_param("batch_size", 64)
-        
-        # 모델 학습 및 평가
-        for epoch in tqdm(range(1, 11), desc="training..."):
-            train_loss = train(model, device, train_loader, optimizer, epoch)
-            test_loss, accuracy = test(model, device, test_loader)
-            
-            mlflow.log_metric("train_loss", train_loss, step=epoch)
-            mlflow.log_metric("test_loss", test_loss, step=epoch)
-            mlflow.log_metric("test_accuracy", accuracy, step=epoch)
-        
-        input_example = X_test_tensor[0:1].to(device)
-        input_example_in_numpy = input_example.cpu().numpy()
-        output_example = model(input_example).detach().cpu().numpy()
-        signature = infer_signature(input_example.cpu().numpy(), output_example)
-        
-        mlflow.pytorch.log_model(model, "cnn_model", signature=signature, input_example=input_example_in_numpy)
-        
-        print(f"Run ID: {run.info.run_id}")
+    # 모델 학습 및 평가
+    for epoch in range(1, 11):  # 10 에포크 동안 학습
+        train(model, device, train_loader, optimizer, epoch)
+        test(model, device, test_loader)
+
+    test(model, device, test_loader)
     
 if __name__ == "__main__":
     mlflow.set_experiment("mnist_experiment")
