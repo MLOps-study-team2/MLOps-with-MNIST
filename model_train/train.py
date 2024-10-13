@@ -6,7 +6,7 @@ from dataloader import get_data_loaders
 from model import CNNModel
 from test import test
 import mlflow
-from torchinfo import summary
+#from torchinfo import summary
 
 def train(model, device, loss_fn, train_loader, optimizer, epoch):
     model.train()
@@ -33,6 +33,7 @@ def train(model, device, loss_fn, train_loader, optimizer, epoch):
                   f' ({100. * batch_idx / len(train_loader):.0f}%)]\tLoss: {loss.item():.6f}')
 
 if __name__ == "__main__":
+    mlflow.set_tracking_uri("http://localhost:5000")
     mlflow.set_experiment("model-train")
     
     with mlflow.start_run():
@@ -64,9 +65,9 @@ if __name__ == "__main__":
         mlflow.log_params(params)
         
         # 모델 요약 정보 로깅
-        with open('model_summary.txt', 'w') as f:
+        '''with open('model_summary.txt', 'w') as f:
             f.write(str(summary(model, input_size=(64, 1, 28, 28))))
-        mlflow.log_artifact('model_summary.txt')
+        mlflow.log_artifact('model_summary.txt')'''
         
         best_test_loss = float('inf')
         
@@ -82,9 +83,9 @@ if __name__ == "__main__":
         # 최적 모델 저장
         if test_loss < best_test_loss:
             best_test_loss = test_loss
-            torch.save(model.state_dict(), "../models/best.pth")
-            mlflow.pytorch.log_model(model, "best_model")
-        torch.save(model.state_dict(), "../models/last.pth")
+            torch.save(model.state_dict(), "./models/best.pth")
+            mlflow.pytorch.log_model(model, "best_model", registered_model_name='MLOps-MNIST')
+        torch.save(model.state_dict(), "./models/last.pth")
         
         # 최종 모델 저장
         mlflow.pytorch.log_model(model, "final_model")

@@ -13,13 +13,14 @@ router = APIRouter() # 라우터 생성
 async def root():
     return {"message": "MNIST Digit Classifier API"}
 
-@router.post("/predict", response_class=JSONResponse)
+@router.post("/predict/", response_class=JSONResponse)
 async def img_predict(request: Request, file: UploadFile = File(...)):
     try:
         # 업로드된 파일 읽기
         contents = await file.read()
         # 이미지를 PIL 객체로 로드하고 그레이스케일로 변환
         pil_image = Image.open(io.BytesIO(contents)).convert('L')
+        pil_image = pil_image.resize((28, 28))  # Resize to 28x28
         transform = get_mnist_transform() # 이미지 전처리
         torch_image = transform(pil_image).unsqueeze(0) # 배치 차원 추가
         
