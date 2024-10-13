@@ -6,7 +6,7 @@ from dataloader import get_data_loaders
 from model import CNNModel
 from test import test
 import mlflow
-#from torchinfo import summary
+from torchinfo import summary
 
 def train(model, device, loss_fn, train_loader, optimizer, epoch):
     model.train()
