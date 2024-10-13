@@ -65,9 +65,9 @@ if __name__ == "__main__":
         mlflow.log_params(params)
         
         # 모델 요약 정보 로깅
-        '''with open('model_summary.txt', 'w') as f:
+        with open('model_summary.txt', 'w') as f:
             f.write(str(summary(model, input_size=(64, 1, 28, 28))))
-        mlflow.log_artifact('model_summary.txt')'''
+        mlflow.log_artifact('model_summary.txt')
         
         best_test_loss = float('inf')
         
